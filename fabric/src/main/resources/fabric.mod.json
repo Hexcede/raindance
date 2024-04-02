@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "id": "raindance",
+  "version": "${version}",
+
+  "name": "Raindance",
+  "description": "Create permanent rain.",
+  "authors": ["Hexcede"],
+  "contact": {},
+
+  "license": "All Rights Reserved",
+  "icon": "icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.hexcede.raindance.fabric.RaindanceFabric"
+    ]
+  },
+  "mixins": [
+    "raindance.mixins.json",
+    "raindance-common.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.15.7",
+    "minecraft": ">=1.20"
+  },
+
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.patreon": "https://patreon.com/Hexcede",
+        "modmenu.discord": "https://discord.gg/tB6dP5eXqr",
+        "modrinth.modrinth": "https://modrinth.com/project/raindance"
+      },
+      "badges": [ ],
+      "update_checker": true
+    }
+  }
+}
