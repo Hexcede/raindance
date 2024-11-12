@@ -64,6 +64,12 @@ ${mod_description}
    versionRange="[1.21,1.22)"
    ordering="NONE"
    side="BOTH"
+[[dependencies.raindance]]
+   modId = "yet_another_config_lib_v3"
+   type="required" #mandatory
+   versionRange = "[3.6.1,)"
+   ordering = "NONE"
+   side = "CLIENT"
 [[mixins]]
 config = "raindance-common.mixins.json"
 [[mixins]]

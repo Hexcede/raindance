@@ -7,5 +7,6 @@ public class RaindanceFabric implements ModInitializer {
     @Override
     public void onInitialize() {
         Raindance.init();
+
     }
 }
