@@ -8,7 +8,7 @@
   "authors": ["Hexcede"],
   "contact": {},
 
-  "license": "All Rights Reserved",
+  "license": "MIT",
   "icon": "icon.png",
 
   "environment": "*",
