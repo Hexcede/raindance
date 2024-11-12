@@ -25,11 +25,19 @@ dependencies {
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 }
 
-processResources {
-    inputs.property "version", project.version
+tasks.withType(ProcessResources).configureEach {
+    var replaceProperties = [
+        version: project.version,
+        mod_id: rootProject.mod_id,
+        mod_name: rootProject.mod_name,
+        mod_description: rootProject.mod_description,
+        mod_authors: rootProject.mod_authors,
+        license: rootProject.license,
+    ]
+    inputs.properties replaceProperties
 
-    filesMatching("fabric.mod.json") {
-        expand "version": project.version
+    filesMatching(["fabric.mod.json"]) {
+        expand replaceProperties
     }
 }
 

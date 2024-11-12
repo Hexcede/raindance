@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "id": "raindance",
+  "id": "${mod_id}",
   "version": "${version}",
 
-  "name": "Raindance",
-  "description": "Create permanent rain.",
-  "authors": ["Hexcede"],
+  "name": "${mod_name}",
+  "description": "${mod_description}",
+  "authors": ["${mod_authors}"],
   "contact": {},
 
-  "license": "MIT",
+  "license": "${license}",
   "icon": "icon.png",
 
   "environment": "*",
