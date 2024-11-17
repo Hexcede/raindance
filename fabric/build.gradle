@@ -22,6 +22,7 @@ repositories {
 dependencies {
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
     modApi "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
+    modImplementation "dev.isxander:yet-another-config-lib:${project.yacl_version}"
     modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }

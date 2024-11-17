@@ -8,4 +8,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 public interface PrimaryLevelDataInvoker {
     @Invoker(value = "setRaining")
     void setIsRaining(boolean raining);
+
+    @Invoker(value = "setThundering")
+    void setIsThundering(boolean thundering);
 }
