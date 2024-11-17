@@ -15,6 +15,9 @@
   "entrypoints": {
     "main": [
       "net.hexcede.raindance.fabric.RaindanceFabric"
+    ],
+    "modmenu": [
+      "net.hexcede.raindance.fabric.config.ModMenuIntegration"
     ]
   },
   "mixins": [
