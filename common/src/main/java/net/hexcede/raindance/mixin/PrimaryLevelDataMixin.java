@@ -60,7 +60,7 @@ public class PrimaryLevelDataMixin {
         PrimaryLevelDataInvoker invoker = (PrimaryLevelDataInvoker) this;
 
         // Set the thundering state & update the return value
-        invoker.setIsThundering(true);
-        ci.setReturnValue(true);
+        invoker.setIsThundering(targetThundering);
+        ci.setReturnValue(targetThundering);
     }
 }
