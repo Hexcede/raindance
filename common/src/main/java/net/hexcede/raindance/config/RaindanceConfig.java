@@ -39,7 +39,21 @@ public class RaindanceConfig {
                         .description(OptionDescription.of(Component.literal("This setting overrides the state of thunderstorms.")))
                         .binding(WeatherMode.ALLOW, () -> this.thunderMode, newVal -> this.thunderMode = newVal)
                         .controller(opt -> EnumControllerBuilder.create(opt)
-                                .enumClass(WeatherMode.class))
+                            .enumClass(WeatherMode.class))
+                        .build())
+                    .option(Option.<WeatherMode>createBuilder()
+                        .name(Component.literal("Biome Precipitation"))
+                        .description(OptionDescription.of(Component.literal("This setting overrides biome specific precipitation (e.g. in deserts).")))
+                        .binding(WeatherMode.FORCE, () -> this.biomeMode, newVal -> this.biomeMode = newVal)
+                        .controller(opt -> EnumControllerBuilder.create(opt)
+                            .enumClass(WeatherMode.class))
+                        .build())
+                    .option(Option.<WeatherMode>createBuilder()
+                        .name(Component.literal("Snow Override"))
+                        .description(OptionDescription.of(Component.literal("This setting overrides whether or not precipitation is snow.")))
+                        .binding(WeatherMode.ALLOW, () -> this.snowMode, newVal -> this.snowMode = newVal)
+                        .controller(opt -> EnumControllerBuilder.create(opt)
+                            .enumClass(WeatherMode.class))
                         .build())
                     .build())
                 .build())
@@ -52,4 +66,10 @@ public class RaindanceConfig {
 
     @SerialEntry
     public WeatherMode thunderMode = WeatherMode.ALLOW;
+
+    @SerialEntry
+    public WeatherMode biomeMode = WeatherMode.FORCE;
+
+    @SerialEntry
+    public WeatherMode snowMode = WeatherMode.ALLOW;
 }
