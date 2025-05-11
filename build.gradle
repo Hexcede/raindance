@@ -40,6 +40,11 @@ allprojects {
         // for more information about repositories.
         maven { url "https://maven.neoforged.net/releases/" }
         maven { url "https://maven.isxander.dev/releases" }
+
+        maven {
+            name = "Kotlin for Forge"
+            url = "https://thedarkcolour.github.io/KotlinForForge/"
+        }
     }
 
     tasks.withType(JavaCompile) {
