@@ -5,17 +5,18 @@ import net.hexcede.raindance.config.WeatherMode;
 import net.minecraft.world.level.storage.PrimaryLevelData;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
 
-import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 
 @Mixin(PrimaryLevelData.class)
 public class PrimaryLevelDataMixin {
     @Unique
     RaindanceConfig raindance$config = RaindanceConfig.HANDLER.instance();
 
-    @ModifyReturnValue(method = "isRaining", at = @At("RETURN"))
-    private boolean isRaining(boolean isRaining) {
+    @WrapMethod(method = "isRaining")
+    private boolean isRaining(Operation<Boolean> original) {
+        boolean isRaining = original.call();
         WeatherMode weatherMode = raindance$config.weatherMode;
 
         switch (weatherMode) {
@@ -30,8 +31,9 @@ public class PrimaryLevelDataMixin {
         return isRaining;
     }
 
-    @ModifyReturnValue(method = "isThundering", at = @At("RETURN"))
-    private boolean isThundering(boolean isThundering) {
+    @WrapMethod(method = "isThundering")
+    private boolean isThundering(Operation<Boolean> original) {
+        boolean isThundering = original.call();
         WeatherMode weatherMode = raindance$config.thunderMode;
 
         switch (weatherMode) {

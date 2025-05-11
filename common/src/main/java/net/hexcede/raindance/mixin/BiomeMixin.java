@@ -2,20 +2,23 @@ package net.hexcede.raindance.mixin;
 
 import net.hexcede.raindance.config.RaindanceConfig;
 import net.hexcede.raindance.config.WeatherMode;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.biome.Biome;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
 
-import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 
 @Mixin(Biome.class)
 public class BiomeMixin {
     @Unique
     RaindanceConfig raindance$config = RaindanceConfig.HANDLER.instance();
 
-    @ModifyReturnValue(method = "hasPrecipitation", at = @At("RETURN"))
-    private boolean hasPrecipitation(boolean hasPrecipitation) {
+    @WrapMethod(method = "hasPrecipitation")
+    private boolean hasPrecipitation(Operation<Boolean> original) {
+        boolean hasPrecipitation = original.call();
+
         WeatherMode biomeMode = raindance$config.biomeMode;
 
         switch (biomeMode) {
@@ -30,8 +33,9 @@ public class BiomeMixin {
         return hasPrecipitation;
     }
 
-    @ModifyReturnValue(method = "getPrecipitationAt", at = @At("RETURN"))
-    private Biome.Precipitation getPrecipitationAt(Biome.Precipitation precipitation) {
+    @WrapMethod(method = "getPrecipitationAt")
+    private Biome.Precipitation getPrecipitationAt(BlockPos pos, Operation<Biome.Precipitation> original) {
+        Biome.Precipitation precipitation = original.call(pos);
         WeatherMode snowMode = raindance$config.snowMode;
 
         switch (snowMode) {
