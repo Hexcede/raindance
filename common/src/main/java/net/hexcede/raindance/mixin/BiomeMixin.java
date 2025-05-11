@@ -6,58 +6,43 @@ import net.minecraft.world.level.biome.Biome;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 
 @Mixin(Biome.class)
 public class BiomeMixin {
     @Unique
     RaindanceConfig raindance$config = RaindanceConfig.HANDLER.instance();
 
-    @Inject(method = "hasPrecipitation", at = @At("TAIL"), cancellable = true)
-    private void hasPrecipitation(CallbackInfoReturnable<Boolean> ci) {
+    @ModifyReturnValue(method = "hasPrecipitation", at = @At("RETURN"))
+    private boolean hasPrecipitation(boolean hasPrecipitation) {
         WeatherMode biomeMode = raindance$config.biomeMode;
 
-        // If biome control is set to be allowed, don't modify the precipitation state
-        if (biomeMode == WeatherMode.ALLOW) {
-            return;
+        switch (biomeMode) {
+            case WeatherMode.ALLOW:
+                break;
+            case WeatherMode.FORCE:
+                return true;
+            case WeatherMode.DISALLOW:
+                return false;
         }
 
-        // Check for the precipitation state in this biome, and determine what the desired precipitation state is
-        boolean hasPrecipitation = ci.getReturnValue();
-        boolean targetPrecipitation = biomeMode == WeatherMode.FORCE;
-
-        // Do nothing if the biome already has the desired precipitation
-        if (hasPrecipitation == targetPrecipitation) {
-            return;
-        }
-
-        // Update the return value depending on the target precipitation state
-        ci.setReturnValue(targetPrecipitation);
+        return hasPrecipitation;
     }
 
-    @Inject(method = "getPrecipitationAt", at = @At("TAIL"), cancellable = true)
-    private void getPrecipitationAt(CallbackInfoReturnable<Biome.Precipitation> ci) {
+    @ModifyReturnValue(method = "getPrecipitationAt", at = @At("RETURN"))
+    private Biome.Precipitation getPrecipitationAt(Biome.Precipitation precipitation) {
         WeatherMode snowMode = raindance$config.snowMode;
 
-        // If snow is set to be allowed, don't modify the precipitation kind
-        if (snowMode == WeatherMode.ALLOW) {
-            return;
+        switch (snowMode) {
+            case WeatherMode.ALLOW:
+                break;
+            case WeatherMode.FORCE:
+                return Biome.Precipitation.SNOW;
+            case WeatherMode.DISALLOW:
+                return Biome.Precipitation.RAIN;
         }
 
-        // Get the real precipitation kind
-        Biome.Precipitation precipitation = ci.getReturnValue();
-
-        // Check if the current precipitation is snow, and determine what the desired snow state is
-        boolean hasSnow = precipitation == Biome.Precipitation.SNOW;
-        boolean targetSnow = snowMode == WeatherMode.FORCE;
-
-        // Do nothing if the target snow state is already the current snow state
-        if (hasSnow == targetSnow) {
-            return;
-        }
-
-        // Update the return value depending on the target snow value
-        ci.setReturnValue(targetSnow ? Biome.Precipitation.SNOW : Biome.Precipitation.RAIN);
+        return precipitation;
     }
 }

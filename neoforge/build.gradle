@@ -15,6 +15,9 @@ configurations {
 }
 
 dependencies {
+    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.4.1"))
+    implementation(include("io.github.llamalad7:mixinextras-neoforge:0.4.1"))
+
     neoForge "net.neoforged:neoforge:${rootProject.neoforge_version}"
     modImplementation "dev.isxander:yet-another-config-lib:${project.yacl_version}"
     forgeRuntimeLibrary(modImplementation("dev.isxander:yet-another-config-lib:${project.yacl_version}"))
