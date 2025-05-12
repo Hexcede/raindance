@@ -2,6 +2,7 @@ package net.hexcede.raindance.mixin;
 
 import net.hexcede.raindance.config.RaindanceConfig;
 import net.hexcede.raindance.config.WeatherMode;
+import net.hexcede.raindance.weather.SnowyWeather;
 import net.hexcede.raindance.weather.WeatherConditions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.biome.Biome;
@@ -54,16 +55,9 @@ public class BiomeMixin {
     )
     public boolean shouldSnow_warmEnoughToRain(Biome biome, BlockPos pos, Operation<Boolean> original)
     {
-        Supplier<Boolean> warmEnoughToRain = () -> {
-            // If snow mode is forced it is not warm enough to rain
-            if (raindance$config.snowMode == WeatherMode.FORCE) {
-                return false;
-            }
+        Supplier<Boolean> coldEnoughToSnow = () -> !original.call(biome, pos);
 
-            return original.call(biome, pos);
-        };
-
-        return WeatherConditions.applyModeInverse(raindance$config.snowLayersMode, warmEnoughToRain);
+        return !SnowyWeather.shouldCreateSnowLayers(coldEnoughToSnow);
     }
 
     @WrapOperation(
@@ -75,15 +69,8 @@ public class BiomeMixin {
     )
     public boolean shouldFreeze_warmEnoughToRain(Biome biome, BlockPos pos, Operation<Boolean> original)
     {
-        Supplier<Boolean> warmEnoughToRain = () -> {
-            // If snow mode is forced it is not warm enough to rain
-            if (raindance$config.snowMode == WeatherMode.FORCE) {
-                return false;
-            }
+        Supplier<Boolean> coldEnoughToSnow = () -> !original.call(biome, pos);
 
-            return original.call(biome, pos);
-        };
-
-        return WeatherConditions.applyModeInverse(raindance$config.iceGenerationMode, warmEnoughToRain);
+        return !SnowyWeather.shouldFreezeBlocks(coldEnoughToSnow);
     }
 }
