@@ -75,6 +75,12 @@ public class BiomeMixin {
                 return true;
         }
 
+        WeatherMode snowMode = raindance$config.snowMode;
+
+        if (snowMode == WeatherMode.FORCE) {
+            return false;
+        }
+
         return isWarmEnoughToRain;
     }
 
@@ -98,6 +104,12 @@ public class BiomeMixin {
                 return false;
             case WeatherMode.DISALLOW:
                 return true;
+        }
+
+        WeatherMode snowMode = raindance$config.snowMode;
+
+        if (snowMode == WeatherMode.FORCE) {
+            return false;
         }
 
         return isWarmEnoughToRain;
