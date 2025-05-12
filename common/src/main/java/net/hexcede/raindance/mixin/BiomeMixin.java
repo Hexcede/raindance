@@ -4,11 +4,14 @@ import net.hexcede.raindance.config.RaindanceConfig;
 import net.hexcede.raindance.config.WeatherMode;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.biome.Biome;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
 
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 
 @Mixin(Biome.class)
 public class BiomeMixin {
@@ -48,5 +51,55 @@ public class BiomeMixin {
         }
 
         return precipitation;
+    }
+
+    @WrapOperation(
+        method="shouldSnow(Lnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;Z)Z",
+        at=@At(
+            value = "INVOKE",
+            target = "net/minecraft/world/level/biome/Biome.warmEnoughToRain(Lnet/minecraft/core/BlockPos;)Z"
+        )
+    )
+    public boolean shouldSnow_warmEnoughToRain(Biome biome, BlockPos pos, Operation<Boolean> original)
+    {
+        boolean isWarmEnoughToRain = original.call(biome, pos);
+
+        WeatherMode snowLayersMode = raindance$config.snowLayersMode;
+
+        switch (snowLayersMode) {
+            case WeatherMode.ALLOW:
+                break;
+            case WeatherMode.FORCE:
+                return false;
+            case WeatherMode.DISALLOW:
+                return true;
+        }
+
+        return isWarmEnoughToRain;
+    }
+
+    @WrapOperation(
+        method="shouldFreeze(Lnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;Z)Z",
+        at=@At(
+            value = "INVOKE",
+            target = "net/minecraft/world/level/biome/Biome.warmEnoughToRain(Lnet/minecraft/core/BlockPos;)Z"
+        )
+    )
+    public boolean shouldFreeze_warmEnoughToRain(Biome biome, BlockPos pos, Operation<Boolean> original)
+    {
+        boolean isWarmEnoughToRain = original.call(biome, pos);
+
+        WeatherMode iceGenerationMode = raindance$config.iceGenerationMode;
+
+        switch (iceGenerationMode) {
+            case WeatherMode.ALLOW:
+                break;
+            case WeatherMode.FORCE:
+                return false;
+            case WeatherMode.DISALLOW:
+                return true;
+        }
+
+        return isWarmEnoughToRain;
     }
 }

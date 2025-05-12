@@ -55,6 +55,20 @@ public class RaindanceConfig {
                         .controller(opt -> EnumControllerBuilder.create(opt)
                             .enumClass(WeatherMode.class))
                         .build())
+                    .option(Option.<WeatherMode>createBuilder()
+                        .name(Component.literal("Snow Layer Override"))
+                        .description(OptionDescription.of(Component.literal("This setting overrides whether or not weather creates snow layers.")))
+                        .binding(WeatherMode.ALLOW, () -> this.snowLayersMode, newVal -> this.snowLayersMode = newVal)
+                        .controller(opt -> EnumControllerBuilder.create(opt)
+                            .enumClass(WeatherMode.class))
+                        .build())
+                    .option(Option.<WeatherMode>createBuilder()
+                        .name(Component.literal("Freezing Override"))
+                        .description(OptionDescription.of(Component.literal("This setting overrides whether or not water will freeze into ice.")))
+                        .binding(WeatherMode.ALLOW, () -> this.iceGenerationMode, newVal -> this.iceGenerationMode = newVal)
+                        .controller(opt -> EnumControllerBuilder.create(opt)
+                            .enumClass(WeatherMode.class))
+                        .build())
                     .build())
                 .build())
             .save(() -> HANDLER.save())
@@ -72,4 +86,10 @@ public class RaindanceConfig {
 
     @SerialEntry
     public WeatherMode snowMode = WeatherMode.ALLOW;
+
+    @SerialEntry
+    public WeatherMode snowLayersMode = WeatherMode.ALLOW;
+
+    @SerialEntry
+    public WeatherMode iceGenerationMode = WeatherMode.ALLOW;
 }
