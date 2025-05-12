@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.hexcede.raindance.config.RaindanceConfig;
 import net.hexcede.raindance.config.WeatherMode;
+import net.hexcede.raindance.weather.StormyWeather;
 import net.hexcede.raindance.weather.WeatherConditions;
 
 import java.util.function.Supplier;
@@ -29,9 +30,7 @@ public class ServerLevelMixin {
     )
     public boolean tickChunk_isThundering(ServerLevel level, Operation<Boolean> original)
     {
-        Supplier<Boolean> result = () -> original.call(level);
-
-        return WeatherConditions.applyMode(raindance$config.lightningMode, result);
+        return StormyWeather.shouldCreateLightning(() -> original.call(level));
     }
 
     @WrapOperation(
@@ -43,19 +42,14 @@ public class ServerLevelMixin {
     )
     public boolean tickChunk_isRainingAt(ServerLevel level, BlockPos pos, Operation<Boolean> original)
     {
-        WeatherMode lightningMode = raindance$config.lightningMode;
-
         Supplier<Boolean> result = () -> original.call(level, pos);
 
-        switch (lightningMode) {
-            case WeatherMode.ALLOW:
-                break;
-            case WeatherMode.FORCE:
-                return WeatherConditions.withRainSpoofed(result);
-            case WeatherMode.DISALLOW:
-                return false;
+        // If the lightning mode is forced, we need to call the game's original logic but with the precipitation spoofed as rain
+        // This way, conditions like sky access are still handled properly by the game
+        if (raindance$config.lightningMode == WeatherMode.FORCE) {
+            return WeatherConditions.withRainSpoofed(result);
         }
 
-        return result.get();
+        return StormyWeather.shouldCreateLightning(result);
     }
 }
