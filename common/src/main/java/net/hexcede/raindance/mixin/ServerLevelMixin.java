@@ -2,11 +2,11 @@ package net.hexcede.raindance.mixin;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraft.world.level.levelgen.Heightmap;
 import net.hexcede.raindance.config.RaindanceConfig;
 import net.hexcede.raindance.config.WeatherMode;
+import net.hexcede.raindance.weather.WeatherConditions;
+
+import java.util.function.Supplier;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -29,18 +29,9 @@ public class ServerLevelMixin {
     )
     public boolean tickChunk_isThundering(ServerLevel level, Operation<Boolean> original)
     {
-        WeatherMode lightningMode = raindance$config.lightningMode;
+        Supplier<Boolean> result = () -> original.call(level);
 
-        switch (lightningMode) {
-            case WeatherMode.ALLOW:
-                break;
-            case WeatherMode.FORCE:
-                return true;
-            case WeatherMode.DISALLOW:
-                return false;
-        }
-
-        return original.call(level);
+        return WeatherConditions.applyMode(raindance$config.lightningMode, result);
     }
 
     @WrapOperation(
@@ -54,25 +45,17 @@ public class ServerLevelMixin {
     {
         WeatherMode lightningMode = raindance$config.lightningMode;
 
+        Supplier<Boolean> result = () -> original.call(level, pos);
+
         switch (lightningMode) {
             case WeatherMode.ALLOW:
                 break;
             case WeatherMode.FORCE:
-                // Re-implementation of the vanilla isRainingAt logic with biome precipitation code removed
-                // TODO: Conditionally wrap Biome.getPrecipitationAt call here instead
-                if (!level.isRaining()) {
-                    return false;
-                } else if (!level.canSeeSky(pos)) {
-                    return false;
-                } else if (level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).getY() > pos.getY()) {
-                    return false;
-                } else {
-                    return true;
-                }
+                return WeatherConditions.withRainSpoofed(result);
             case WeatherMode.DISALLOW:
                 return false;
         }
 
-        return original.call(level, pos);
+        return result.get();
     }
 }

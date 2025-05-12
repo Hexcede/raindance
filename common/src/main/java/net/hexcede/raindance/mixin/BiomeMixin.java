@@ -2,8 +2,11 @@ package net.hexcede.raindance.mixin;
 
 import net.hexcede.raindance.config.RaindanceConfig;
 import net.hexcede.raindance.config.WeatherMode;
+import net.hexcede.raindance.weather.WeatherConditions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.biome.Biome;
+
+import java.util.function.Supplier;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -20,28 +23,17 @@ public class BiomeMixin {
 
     @WrapMethod(method = "hasPrecipitation")
     private boolean hasPrecipitation(Operation<Boolean> original) {
-        boolean hasPrecipitation = original.call();
-
-        WeatherMode biomeMode = raindance$config.biomeMode;
-
-        switch (biomeMode) {
-            case WeatherMode.ALLOW:
-                break;
-            case WeatherMode.FORCE:
-                return true;
-            case WeatherMode.DISALLOW:
-                return false;
-        }
-
-        return hasPrecipitation;
+        return WeatherConditions.applyMode(raindance$config.biomeMode, original::call);
     }
 
     @WrapMethod(method = "getPrecipitationAt")
     private Biome.Precipitation getPrecipitationAt(BlockPos pos, Operation<Biome.Precipitation> original) {
-        Biome.Precipitation precipitation = original.call(pos);
-        WeatherMode snowMode = raindance$config.snowMode;
+        // Short-circuit to allow global rain to be spoofed in certain contexts (e.g. when forcing lightning)
+        if (WeatherConditions.shouldSpoofGlobalRain()) {
+            return Biome.Precipitation.RAIN;
+        }
 
-        switch (snowMode) {
+        switch (raindance$config.snowMode) {
             case WeatherMode.ALLOW:
                 break;
             case WeatherMode.FORCE:
@@ -50,7 +42,7 @@ public class BiomeMixin {
                 return Biome.Precipitation.RAIN;
         }
 
-        return precipitation;
+        return original.call(pos);
     }
 
     @WrapOperation(
@@ -62,26 +54,16 @@ public class BiomeMixin {
     )
     public boolean shouldSnow_warmEnoughToRain(Biome biome, BlockPos pos, Operation<Boolean> original)
     {
-        boolean isWarmEnoughToRain = original.call(biome, pos);
-
-        WeatherMode snowLayersMode = raindance$config.snowLayersMode;
-
-        switch (snowLayersMode) {
-            case WeatherMode.ALLOW:
-                break;
-            case WeatherMode.FORCE:
+        Supplier<Boolean> warmEnoughToRain = () -> {
+            // If snow mode is forced it is not warm enough to rain
+            if (raindance$config.snowMode == WeatherMode.FORCE) {
                 return false;
-            case WeatherMode.DISALLOW:
-                return true;
-        }
+            }
 
-        WeatherMode snowMode = raindance$config.snowMode;
+            return original.call(biome, pos);
+        };
 
-        if (snowMode == WeatherMode.FORCE) {
-            return false;
-        }
-
-        return isWarmEnoughToRain;
+        return WeatherConditions.applyModeInverse(raindance$config.snowLayersMode, warmEnoughToRain);
     }
 
     @WrapOperation(
@@ -93,25 +75,15 @@ public class BiomeMixin {
     )
     public boolean shouldFreeze_warmEnoughToRain(Biome biome, BlockPos pos, Operation<Boolean> original)
     {
-        boolean isWarmEnoughToRain = original.call(biome, pos);
-
-        WeatherMode iceGenerationMode = raindance$config.iceGenerationMode;
-
-        switch (iceGenerationMode) {
-            case WeatherMode.ALLOW:
-                break;
-            case WeatherMode.FORCE:
+        Supplier<Boolean> warmEnoughToRain = () -> {
+            // If snow mode is forced it is not warm enough to rain
+            if (raindance$config.snowMode == WeatherMode.FORCE) {
                 return false;
-            case WeatherMode.DISALLOW:
-                return true;
-        }
+            }
 
-        WeatherMode snowMode = raindance$config.snowMode;
+            return original.call(biome, pos);
+        };
 
-        if (snowMode == WeatherMode.FORCE) {
-            return false;
-        }
-
-        return isWarmEnoughToRain;
+        return WeatherConditions.applyModeInverse(raindance$config.iceGenerationMode, warmEnoughToRain);
     }
 }
