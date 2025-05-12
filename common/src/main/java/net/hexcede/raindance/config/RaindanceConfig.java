@@ -63,7 +63,7 @@ public class RaindanceConfig {
                             .enumClass(WeatherMode.class))
                         .build())
                     .option(Option.<WeatherMode>createBuilder()
-                        .name(Component.literal("Freezing Override"))
+                        .name(Component.literal("Ice Generation Override"))
                         .description(OptionDescription.of(Component.literal("This setting overrides whether or not water will freeze into ice.")))
                         .binding(WeatherMode.ALLOW, () -> this.iceGenerationMode, newVal -> this.iceGenerationMode = newVal)
                         .controller(opt -> EnumControllerBuilder.create(opt)
