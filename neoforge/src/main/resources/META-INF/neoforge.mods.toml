@@ -61,7 +61,7 @@ ${mod_description}
    modId="minecraft"
    type="required" #mandatory
    # This version range declares a minimum of the current minecraft version up to but not including the next major version
-   versionRange="[1.21,1.22)"
+   versionRange="[1.20.3,1.21)"
    ordering="NONE"
    side="BOTH"
 [[dependencies.raindance]]
