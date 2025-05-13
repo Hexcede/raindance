@@ -28,11 +28,11 @@ public class WeatherConditions {
 
     public static boolean applyMode(WeatherMode mode, Supplier<Boolean> result) {
         switch (mode) {
-            case WeatherMode.ALLOW:
+            case ALLOW:
                 break;
-            case WeatherMode.FORCE:
+            case FORCE:
                 return true;
-            case WeatherMode.DISALLOW:
+            case DISALLOW:
                 return false;
         }
 
