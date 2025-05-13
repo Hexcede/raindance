@@ -1,7 +1,6 @@
 package net.hexcede.raindance.mixin;
 
 import net.hexcede.raindance.config.RaindanceConfig;
-import net.hexcede.raindance.config.WeatherMode;
 import net.hexcede.raindance.weather.SnowyWeather;
 import net.hexcede.raindance.weather.WeatherConditions;
 import net.minecraft.core.BlockPos;
@@ -37,11 +36,11 @@ public class BiomeMixin {
         Biome.Precipitation precipitation = original.call(pos);
 
         switch (raindance$config.snowMode) {
-            case WeatherMode.ALLOW:
+            case ALLOW:
                 break;
-            case WeatherMode.FORCE:
+            case FORCE:
                 return Biome.Precipitation.SNOW;
-            case WeatherMode.DISALLOW:
+            case DISALLOW:
                 if (precipitation == Biome.Precipitation.SNOW)
                     return Biome.Precipitation.RAIN;
                 break;
