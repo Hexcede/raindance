@@ -47,7 +47,7 @@ public class BiomeMixin {
     }
 
     @WrapOperation(
-        method="shouldSnow(Lnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;Z)Z",
+        method="shouldSnow(Lnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;)Z",
         at=@At(
             value = "INVOKE",
             target = "net/minecraft/world/level/biome/Biome.warmEnoughToRain(Lnet/minecraft/core/BlockPos;)Z"
