@@ -20,7 +20,6 @@ dependencies {
 
     neoForge "net.neoforged:neoforge:${rootProject.neoforge_version}"
     modImplementation "dev.isxander:yet-another-config-lib:${project.yacl_version}"
-    forgeRuntimeLibrary(modImplementation("dev.isxander:yet-another-config-lib:${project.yacl_version}"))
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionNeoForge")) { transitive = false }
@@ -37,7 +36,7 @@ tasks.withType(ProcessResources).configureEach {
     ]
     inputs.properties replaceProperties
 
-    filesMatching(["META-INF/neoforge.mods.toml"]) {
+    filesMatching(["META-INF/mods.toml"]) {
         expand replaceProperties
     }
 }
