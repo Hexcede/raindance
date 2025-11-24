@@ -54,14 +54,23 @@ public class BiomeMixin {
         method="shouldSnow(Lnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;)Z",
         at=@At(
             value = "INVOKE",
-            target = "net/minecraft/world/level/biome/Biome.warmEnoughToRain(Lnet/minecraft/core/BlockPos;I)Z"
+            target = "net/minecraft/world/level/biome/Biome.getPrecipitationAt(Lnet/minecraft/core/BlockPos;I)Lnet/minecraft/world/level/biome/Biome$Precipitation;"
         )
     )
-    public boolean shouldSnow_warmEnoughToRain(Biome biome, BlockPos pos, int seaLevel, Operation<Boolean> original)
+    public Biome.Precipitation shouldSnow_getPrecipitationAt(Biome biome, BlockPos pos, int seaLevel, Operation<Biome.Precipitation> original)
     {
-        Supplier<Boolean> coldEnoughToSnow = () -> !original.call(biome, pos, seaLevel);
+        Biome.Precipitation precipitation = original.call(biome, pos, seaLevel);
 
-        return !SnowyWeather.shouldCreateSnowLayers(coldEnoughToSnow);
+        boolean isSnowing = precipitation == Biome.Precipitation.SNOW;
+        boolean shouldSnow = SnowyWeather.shouldCreateSnowLayers(() -> precipitation == Biome.Precipitation.SNOW);
+
+        if (shouldSnow) {
+            return Biome.Precipitation.SNOW;
+        } else if (isSnowing) {
+            return Biome.Precipitation.NONE;
+        }
+
+        return precipitation;
     }
 
     @WrapOperation(
