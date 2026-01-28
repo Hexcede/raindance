@@ -34,16 +34,20 @@ public class BiomeMixin {
             return Biome.Precipitation.RAIN;
         }
 
+        Biome.Precipitation precipitation = original.call(pos);
+
         switch (raindance$config.snowMode) {
             case WeatherMode.ALLOW:
                 break;
             case WeatherMode.FORCE:
                 return Biome.Precipitation.SNOW;
             case WeatherMode.DISALLOW:
-                return Biome.Precipitation.RAIN;
+                if (precipitation == Biome.Precipitation.SNOW)
+                    return Biome.Precipitation.RAIN;
+                break;
         }
 
-        return original.call(pos);
+        return precipitation;
     }
 
     @WrapOperation(
