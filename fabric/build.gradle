@@ -54,7 +54,7 @@ remapJar {
     injectAccessWidener = true
     inputFile.set(shadowJar.archiveFile)
     dependsOn shadowJar
-    archiveClassifier = null
+    archiveClassifier = project.name + "-" + project.minecraft_version
 }
 
 jar {
