@@ -22,25 +22,25 @@ public class ServerLevelMixin {
     RaindanceConfig raindance$config = RaindanceConfig.HANDLER.instance();
 
     @WrapOperation(
-        method="tickChunk(Lnet/minecraft/world/level/chunk/LevelChunk;I)V",
+        method="tickThunder(Lnet/minecraft/world/level/chunk/LevelChunk;)V",
         at=@At(
             value = "INVOKE",
             target = "net/minecraft/server/level/ServerLevel.isThundering()Z"
         )
     )
-    public boolean tickChunk_isThundering(ServerLevel level, Operation<Boolean> original)
+    public boolean tickThunder_isThundering(ServerLevel level, Operation<Boolean> original)
     {
         return StormyWeather.shouldCreateLightning(() -> original.call(level));
     }
 
     @WrapOperation(
-        method="tickChunk(Lnet/minecraft/world/level/chunk/LevelChunk;I)V",
+        method="tickThunder(Lnet/minecraft/world/level/chunk/LevelChunk;)V",
         at=@At(
             value = "INVOKE",
             target = "net/minecraft/server/level/ServerLevel.isRainingAt(Lnet/minecraft/core/BlockPos;)Z"
         )
     )
-    public boolean tickChunk_isRainingAt(ServerLevel level, BlockPos pos, Operation<Boolean> original)
+    public boolean tickThunder_isRainingAt(ServerLevel level, BlockPos pos, Operation<Boolean> original)
     {
         Supplier<Boolean> result = () -> original.call(level, pos);
 

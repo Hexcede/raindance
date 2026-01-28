@@ -28,13 +28,13 @@ public class BiomeMixin {
     }
 
     @WrapMethod(method = "getPrecipitationAt")
-    private Biome.Precipitation getPrecipitationAt(BlockPos pos, Operation<Biome.Precipitation> original) {
+    private Biome.Precipitation getPrecipitationAt(BlockPos pos, int i, Operation<Biome.Precipitation> original) {
         // Short-circuit to allow global rain to be spoofed in certain contexts (e.g. when forcing lightning)
         if (WeatherConditions.shouldSpoofGlobalRain()) {
             return Biome.Precipitation.RAIN;
         }
 
-        Biome.Precipitation precipitation = original.call(pos);
+        Biome.Precipitation precipitation = original.call(pos, i);
 
         switch (raindance$config.snowMode) {
             case WeatherMode.ALLOW:
@@ -54,26 +54,33 @@ public class BiomeMixin {
         method="shouldSnow(Lnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;)Z",
         at=@At(
             value = "INVOKE",
-            target = "net/minecraft/world/level/biome/Biome.warmEnoughToRain(Lnet/minecraft/core/BlockPos;)Z"
+            target = "net/minecraft/world/level/biome/Biome.getPrecipitationAt(Lnet/minecraft/core/BlockPos;I)Lnet/minecraft/world/level/biome/Biome$Precipitation;"
         )
     )
-    public boolean shouldSnow_warmEnoughToRain(Biome biome, BlockPos pos, Operation<Boolean> original)
+    public Biome.Precipitation shouldSnow_getPrecipitationAt(Biome biome, BlockPos pos, int i, Operation<Biome.Precipitation> original)
     {
-        Supplier<Boolean> coldEnoughToSnow = () -> !original.call(biome, pos);
+        switch (raindance$config.snowLayersMode) {
+            case WeatherMode.ALLOW:
+                break;
+            case WeatherMode.FORCE:
+                return Biome.Precipitation.SNOW;
+            case WeatherMode.DISALLOW:
+                return Biome.Precipitation.RAIN;
+        }
 
-        return !SnowyWeather.shouldCreateSnowLayers(coldEnoughToSnow);
+        return original.call(biome, pos, i);
     }
 
     @WrapOperation(
         method="shouldFreeze(Lnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;Z)Z",
         at=@At(
             value = "INVOKE",
-            target = "net/minecraft/world/level/biome/Biome.warmEnoughToRain(Lnet/minecraft/core/BlockPos;)Z"
+            target = "net/minecraft/world/level/biome/Biome.warmEnoughToRain(Lnet/minecraft/core/BlockPos;I)Z"
         )
     )
-    public boolean shouldFreeze_warmEnoughToRain(Biome biome, BlockPos pos, Operation<Boolean> original)
+    public boolean shouldFreeze_warmEnoughToRain(Biome biome, BlockPos pos, int i, Operation<Boolean> original)
     {
-        Supplier<Boolean> coldEnoughToSnow = () -> !original.call(biome, pos);
+        Supplier<Boolean> coldEnoughToSnow = () -> !original.call(biome, pos, i);
 
         return !SnowyWeather.shouldFreezeBlocks(coldEnoughToSnow);
     }
