@@ -105,6 +105,7 @@ $RECYCLE.BIN/
 
 .gradle
 build/
+bin/
 
 # Ignore Gradle GUI config
 gradle-app.setting
@@ -113,6 +114,7 @@ gradle-app.setting
 .gradletasknamecache
 
 **/build/
+**/bin/
 
 # Common working directory
 run/
